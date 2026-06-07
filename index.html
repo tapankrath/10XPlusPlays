@@ -277,6 +277,24 @@ input[type=range].cap-slider{width:100%;accent-color:var(--bear);margin-bottom:1
 .pb-profit-result{font-size:13px;font-weight:800;flex-shrink:0;min-width:44px;text-align:right;}
 .pb-del{position:absolute;top:9px;right:9px;width:22px;height:22px;border-radius:50%;background:var(--surface);border:1px solid var(--rule2);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 
+/* API KEY MODAL */
+.apikey-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300;display:none;align-items:flex-end;justify-content:center;}
+.apikey-modal-bg.open{display:flex;}
+.apikey-modal{background:var(--paper);border-radius:18px 18px 0 0;padding:22px 18px calc(24px + var(--safe-b));width:100%;max-width:520px;}
+.apikey-modal-title{font-family:var(--fd);font-size:20px;letter-spacing:1px;margin-bottom:4px;}
+.apikey-modal-sub{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:14px;line-height:1.5;}
+.apikey-modal-sub a{color:var(--bull);text-decoration:none;}
+.apikey-inp-wrap{display:flex;gap:7px;margin-bottom:10px;}
+.apikey-inp{flex:1;background:var(--bg);border:1.5px solid var(--rule2);border-radius:8px;padding:11px 12px;font-size:13px;font-family:var(--fs);color:var(--ink);outline:none;transition:border-color .15s;letter-spacing:.04em;}
+.apikey-inp:focus{border-color:var(--bull);}
+.apikey-inp::placeholder{color:#bbb;font-size:12px;}
+.apikey-save-btn{background:#111;border:none;border-radius:8px;padding:11px 16px;font-size:12px;font-weight:800;color:#fff;cursor:pointer;font-family:var(--fs);white-space:nowrap;}
+.apikey-note{font-size:10px;color:var(--muted);font-weight:600;line-height:1.5;background:var(--surface);border-radius:6px;padding:7px 10px;margin-bottom:12px;}
+.apikey-cancel{width:100%;background:transparent;border:1.5px solid var(--rule2);border-radius:9px;padding:12px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:var(--fs);}
+.apikey-indicator{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;cursor:pointer;border:1px solid;}
+.apikey-indicator.set{background:rgba(23,115,56,.1);border-color:rgba(23,115,56,.3);color:var(--bull);}
+.apikey-indicator.unset{background:rgba(190,18,18,.1);border-color:rgba(190,18,18,.3);color:var(--bear);}
+
 /* TOAST */
 .toast{position:fixed;bottom:calc(14px + var(--safe-b));left:50%;transform:translateX(-50%);background:#111;border-radius:8px;padding:9px 18px;font-size:12px;color:#fff;font-weight:700;z-index:999;opacity:0;transition:opacity .22s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,.25);}
 .toast.show{opacity:1;}
@@ -341,6 +359,20 @@ window._fetchOpts = window.navigator.standalone ? {credentials:'omit'} : {};
   </div>
 </div>
 
+<!-- API KEY MODAL -->
+<div class="apikey-modal-bg" id="apikeyModal" onclick="if(event.target===this)closeApiKeyModal()">
+  <div class="apikey-modal">
+    <div class="apikey-modal-title">Anthropic API Key</div>
+    <div class="apikey-modal-sub">Required to fetch live AI-powered picks. Get yours at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a></div>
+    <div class="apikey-inp-wrap">
+      <input class="apikey-inp" type="password" id="apikeyInput" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
+      <button class="apikey-save-btn" onclick="saveApiKey()">Save</button>
+    </div>
+    <div class="apikey-note">🔒 Stored only in your browser's localStorage — never sent anywhere except directly to Anthropic's API.</div>
+    <button class="apikey-cancel" onclick="closeApiKeyModal()">Cancel</button>
+  </div>
+</div>
+
 <!-- NAV -->
 <div class="nav">
   <div class="nav-left">
@@ -356,6 +388,7 @@ window._fetchOpts = window.navigator.standalone ? {credentials:'omit'} : {};
   <div class="nav-right">
     <div class="nav-cap" id="navCap" onclick="openCapModal()">$25K ▾</div>
     <div class="nav-count" id="navCount">8 picks</div>
+    <div class="apikey-indicator unset" id="apikeyIndicator" onclick="openApiKeyModal()">🔑 Key</div>
   </div>
 </div>
 
@@ -976,6 +1009,37 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2200);
 }
 
+// ── API KEY MANAGEMENT
+const APIKEY_STORAGE_KEY = '10xplus_apikey';
+
+function getApiKey(){
+  return localStorage.getItem(APIKEY_STORAGE_KEY) || '';
+}
+function openApiKeyModal(){
+  const inp = document.getElementById('apikeyInput');
+  inp.value = getApiKey();
+  document.getElementById('apikeyModal').classList.add('open');
+  setTimeout(()=>inp.focus(),120);
+}
+function closeApiKeyModal(){
+  document.getElementById('apikeyModal').classList.remove('open');
+}
+function saveApiKey(){
+  const val = document.getElementById('apikeyInput').value.trim();
+  if(!val){ showToast('Paste your API key first'); return; }
+  localStorage.setItem(APIKEY_STORAGE_KEY, val);
+  updateApiKeyIndicator();
+  closeApiKeyModal();
+  showToast('✓ API key saved');
+}
+function updateApiKeyIndicator(){
+  const el = document.getElementById('apikeyIndicator');
+  if(!el) return;
+  const hasKey = !!getApiKey();
+  el.className = 'apikey-indicator ' + (hasKey ? 'set' : 'unset');
+  el.textContent = hasKey ? '🔑 Key ✓' : '🔑 Key';
+}
+
 // ── REFRESH PICKS via Claude AI + web search
 const PICKS_CACHE_KEY = 'picks10x_v2';
 
@@ -1020,21 +1084,37 @@ function setRefreshState(loading){
 }
 
 async function refreshPicks(){
+  const apiKey = getApiKey();
+  if(!apiKey){
+    openApiKeyModal();
+    showToast('Set your API key to fetch live picks');
+    return;
+  }
   setRefreshState(true);
-  showToast('Fetching live picks… (needs internet)');
+  showToast('Fetching live picks…');
   const today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   const prompt=`Today is ${today}. You are a speculative options strategist. Search the web for the current top momentum stocks right now that are suitable for high-risk options plays targeting 8-10x returns (deep OTM LEAPS, diagonals, ratio backspreads, calendar spreads). Look for high beta, elevated IV, strong recent momentum, and clear near-term catalysts. Focus on AI, defense, space, biotech/AI, crypto proxies, and emerging tech. Return EXACTLY 8 picks as a JSON array. Each object must have these exact keys:
 t (ticker string), n (company name), s (sector label max 12 chars), sc (one of: s-space s-ai s-bio s-def s-btc s-q s-cus), beta (number 1.5-5.0), iv (0-100 integer), mom (0-100 integer), opts (0-100 integer), stars (3-5 integer), color (bull|bear|mixed), thesis (2 sentences max, specific to current catalysts), strat (strategy name), strat2 (entry detail), exitStop (40-85 integer), exitTarget (200-2000 integer), exitTime (3-18 integer).
 Return ONLY the JSON array, no markdown, no explanation, no other text.`;
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',credentials:'omit',mode:'cors',headers:{'Content-Type':'application/json'},
+      method:'POST',credentials:'omit',mode:'cors',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:3000,
+        model:'claude-sonnet-4-5',max_tokens:3000,
         tools:[{type:'web_search_20250305',name:'web_search'}],
         messages:[{role:'user',content:prompt}]
       })
     });
+    if(!r.ok){
+      const errBody = await r.json().catch(()=>({}));
+      if(r.status===401){
+        showToast('Invalid API key — tap 🔑 Key to fix');
+        setRefreshState(false);
+        return;
+      }
+      throw new Error(errBody.error?.message || `HTTP ${r.status}`);
+    }
     const d=await r.json();
     // Extract text content blocks (after tool use)
     const textBlocks=d.content.filter(c=>c.type==='text');
@@ -1055,7 +1135,7 @@ Return ONLY the JSON array, no markdown, no explanation, no other text.`;
     showToast('✓ '+valid.length+' fresh picks loaded');
   }catch(e){
     console.error('Refresh error:',e);
-    showToast('Refresh failed — check internet connection');
+    showToast('Refresh failed — ' + (e.message||'check connection'));
   }
   setRefreshState(false);
 }
@@ -1074,6 +1154,7 @@ Return ONLY the JSON array, no markdown, no explanation, no other text.`;
 
 renderPicks();
 renderBook();
+updateApiKeyIndicator();
 </script>
 
 <script>
