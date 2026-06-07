@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="10XPlus">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIjEwWFBsdXMgT3B0aW9ucyBQbGF5Ym9vayIsICJzaG9ydF9uYW1lIjogIjEwWFBsdXMiLCAiZGVzY3JpcHRpb24iOiAiU3BlY3VsYXRpdmUgb3B0aW9ucyBzdHJhdGVneSB0cmFja2VyIFx1MjAxNCBMRUFQUywgZGlhZ29uYWxzLCBtb21lbnR1bSBwbGF5cyIsICJzdGFydF91cmwiOiAiLi9pbmRleC5odG1sIiwgInNjb3BlIjogIi4vIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMxMTExMTEiLCAidGhlbWVfY29sb3IiOiAiIzExMTExMSIsICJpY29ucyI6IFt7InNyYyI6ICIuL2ljb24tMTkyLnN2ZyIsICJzaXplcyI6ICIxOTJ4MTkyIiwgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9LCB7InNyYyI6ICIuL2ljb24tNTEyLnN2ZyIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9XX0=">
+<link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzExMTExMSIvPjxyZWN0IHg9IjE4IiB5PSIxOCIgd2lkdGg9IjE0NCIgaGVpZ2h0PSIzIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMTMpIi8+PHJlY3QgeD0iMTgiIHk9IjEwNCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjU4IiBmaWxsPSIjMjJhMDRkIi8+PHJlY3QgeD0iNDIiIHk9IjgyIiB3aWR0aD0iMTgiIGhlaWdodD0iODAiIGZpbGw9IiMyMmEwNGQiLz48cmVjdCB4PSI2NiIgeT0iOTQiIHdpZHRoPSIxOCIgaGVpZ2h0PSI2OCIgZmlsbD0iI2UwMjAyMCIvPjxyZWN0IHg9IjkwIiB5PSI1OCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjEwNCIgZmlsbD0iIzIyYTA0ZCIvPjxyZWN0IHg9IjExNCIgeT0iNzIiIHdpZHRoPSIxOCIgaGVpZ2h0PSI5MCIgZmlsbD0iI2UwMjAyMCIvPjxyZWN0IHg9IjEzOCIgeT0iNDIiIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMjAiIGZpbGw9IiMyMmEwNGQiLz48cmVjdCB4PSI2IiB5PSI2IiB3aWR0aD0iMTY4IiBoZWlnaHQ9IjE2OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjJhMDRkIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNCIvPjwvc3ZnPg==">
 <title>10XPlus — Options Playbook</title>
 
@@ -882,8 +882,8 @@ async function analyzeCustom(){
   res.innerHTML='<div class="loading"><span class="spinner"></span>Analyzing '+raw+' with AI…</div>';
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',credentials:'omit',mode:'cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,
+      method:'POST',credentials:'omit',mode:'cors',headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:700,
         messages:[{role:'user',content:`Analyze "${raw}" for a 10x speculative options strategy. Return ONLY valid JSON, no markdown:
 {"name":"company name","beta":number,"iv":0_to_100,"mom":0_to_100,"opts":0_to_100,"verdict":"go"|"caution"|"pass","thesis":"2 sentence options thesis","strat":"strategy name","strat2":"entry detail · when to enter","exitStop":40_to_85,"exitTarget":200_to_2000,"exitTime":3_to_18}`}]
       })
