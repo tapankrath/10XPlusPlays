@@ -540,23 +540,52 @@ function updateGoalPanel(){
     document.getElementById('picksHeading').textContent='AI-Recommended Plays';
     return;
   }
-  const per = Math.round(CAP*0.10); // default per-play
-  const mult = per>0 ? GOAL_AMT/per : 0;
-  const pct  = Math.round(mult*100);
 
-  // How many positions to spread risk
-  const posCount = Math.min(8, Math.max(1, Math.round(GOAL_AMT / (per * Math.max(1,mult*0.6)))));
+  // Back-calculate: what per-play do you need for a realistic target return?
+  // Tier the target return multiple based on strategy:
+  // ≤200% = spread/moderate, ≤600% = LEAPS, ≤1500% = deep OTM, >1500% = lottery
+  // Find the tier that makes per-play sensible relative to capital
+
+  // Try each tier and pick the one where per-play is between 2%-25% of capital
+  const tiers = [
+    { mult: 2,    label: 'moderate',      color: 'hi-gold' },
+    { mult: 5,    label: 'LEAPS',         color: 'hi-bull' },
+    { mult: 10,   label: 'deep OTM',      color: 'hi-bear' },
+    { mult: 20,   label: 'deep OTM',      color: 'hi-bear' },
+    { mult: 40,   label: 'lottery',       color: 'hi-bear' },
+  ];
+
+  let chosenTier = tiers[tiers.length-1];
+  let per = Math.round(GOAL_AMT / chosenTier.mult);
+  for(const tier of tiers){
+    const candidate = Math.round(GOAL_AMT / tier.mult);
+    const pctOfCap = candidate / CAP;
+    if(pctOfCap <= 0.25){ // keeps per-play at most 25% of capital
+      chosenTier = tier;
+      per = candidate;
+      break;
+    }
+  }
+
+  // Clamp per to reasonable bounds: min $100, max 30% of capital
+  per = Math.max(100, Math.min(per, Math.round(CAP * 0.30)));
+
+  const mult = per > 0 ? GOAL_AMT / per : 0;
+  const pct  = Math.round(mult * 100);
+
+  // Positions: spread risk — more positions for higher required multiples
+  const posCount = Math.min(8, Math.max(1, mult <= 3 ? 2 : mult <= 8 ? 3 : mult <= 20 ? 4 : 5));
 
   // Strategy
-  const dummy = PICKS[0]; // use first pick as proxy for strategy selection
-  const rec = pickStrategyForGoal(mult, dummy);
+  const dummy = PICKS[0];
+  const rec = pickStrategyForGoal(mult, dummy || {strat:'Deep OTM LEAPS',strat2:'Far OTM calls',exitTarget:800,exitStop:70});
 
   // Explain line
-  let explainHTML = `To make <strong>${fmtK(GOAL_AMT)}</strong>, your <strong>${fmtK(per)} per-play</strong> needs to return `;
-  if(pct<=200)      explainHTML += `<span class="hi-gold">+${pct}%</span> — achievable with moderate strategies.`;
-  else if(pct<=600) explainHTML += `<span class="hi-bull">+${pct}%</span> — needs LEAPS or diagonal spread.`;
-  else if(pct<=1500)explainHTML += `<span class="hi-bear">+${pct}%</span> — requires deep OTM LEAPS, high risk.`;
-  else              explainHTML += `<span class="hi-bear">+${pct}%</span> — lottery territory, size very small.`;
+  let explainHTML = `To make <strong>${fmtK(GOAL_AMT)}</strong>, put <strong>${fmtK(per)} per-play</strong> — needs to return `;
+  if(pct<=200)       explainHTML += `<span class="hi-gold">+${pct}%</span> — achievable with moderate strategies.`;
+  else if(pct<=600)  explainHTML += `<span class="hi-bull">+${pct}%</span> — needs LEAPS or diagonal spread.`;
+  else if(pct<=1500) explainHTML += `<span class="hi-bear">+${pct}%</span> — requires deep OTM LEAPS, high risk.`;
+  else               explainHTML += `<span class="hi-bear">+${pct}%</span> — lottery territory, size very small.`;
   explainHTML += ` Spread across <strong>${posCount} position${posCount>1?'s':''}</strong>.`;
   explain.innerHTML = explainHTML;
 
@@ -569,9 +598,19 @@ function updateGoalPanel(){
   document.getElementById('picksHeading').textContent='Best Plays for Your Goal';
 }
 
+function getGoalPer(){
+  if(!GOAL_AMT || GOAL_AMT<=0) return Math.round(CAP*0.10);
+  const tiers=[20,10,5,2];
+  for(const m of tiers){
+    const candidate=Math.round(GOAL_AMT/m);
+    if(candidate/CAP<=0.25) return Math.max(100,Math.min(candidate,Math.round(CAP*0.30)));
+  }
+  return Math.max(100,Math.min(Math.round(GOAL_AMT/40),Math.round(CAP*0.30)));
+}
+
 // Sort picks by goal-relevance (highest exitTarget that can hit the goal)
 function getSortedPicks(){
-  const per = Math.round(CAP*0.10);
+  const per = getGoalPer();
   const mult = (GOAL_AMT>0 && per>0) ? GOAL_AMT/per : 0;
   let arr=[...PICKS];
   if(SORT_MODE==='goal'&&GOAL_AMT>0){
@@ -1091,51 +1130,51 @@ async function refreshPicks(){
     return;
   }
   setRefreshState(true);
-  showToast('Fetching live picks…');
+  showToast('Fetching AI picks…');
   const today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  const prompt=`Today is ${today}. You are a speculative options strategist. Search the web for the current top momentum stocks right now that are suitable for high-risk options plays targeting 8-10x returns (deep OTM LEAPS, diagonals, ratio backspreads, calendar spreads). Look for high beta, elevated IV, strong recent momentum, and clear near-term catalysts. Focus on AI, defense, space, biotech/AI, crypto proxies, and emerging tech. Return EXACTLY 8 picks as a JSON array. Each object must have these exact keys:
-t (ticker string), n (company name), s (sector label max 12 chars), sc (one of: s-space s-ai s-bio s-def s-btc s-q s-cus), beta (number 1.5-5.0), iv (0-100 integer), mom (0-100 integer), opts (0-100 integer), stars (3-5 integer), color (bull|bear|mixed), thesis (2 sentences max, specific to current catalysts), strat (strategy name), strat2 (entry detail), exitStop (40-85 integer), exitTarget (200-2000 integer), exitTime (3-18 integer).
-Return ONLY the JSON array, no markdown, no explanation, no other text.`;
+  const prompt=`Today is ${today}. You are a speculative options strategist. Identify the top 8 momentum stocks right now suitable for high-risk options plays targeting 8-10x returns (deep OTM LEAPS, diagonals, ratio backspreads). Focus on high beta, elevated IV, strong recent momentum, clear near-term catalysts. Sectors: AI, defense, space, biotech, crypto proxies, emerging tech.
+
+Return EXACTLY this JSON array and nothing else — no markdown fences, no explanation, no preamble:
+[{"t":"TICKER","n":"Company Name","s":"Sector","sc":"s-ai","beta":2.5,"iv":65,"mom":78,"opts":82,"stars":4,"color":"bull","thesis":"Two sentence thesis with specific catalyst.","strat":"Deep OTM LEAPS","strat2":"Entry detail here","exitStop":50,"exitTarget":800,"exitTime":9},...]
+
+sc must be one of: s-space s-ai s-bio s-def s-btc s-q s-cus
+color must be one of: bull bear mixed
+stars: 3-5, beta: 1.5-5.0, iv/mom/opts: 0-100, exitStop: 40-85, exitTarget: 200-2000, exitTime: 3-18`;
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',credentials:'omit',mode:'cors',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({
         model:'claude-sonnet-4-5',max_tokens:3000,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
         messages:[{role:'user',content:prompt}]
       })
     });
     if(!r.ok){
       const errBody = await r.json().catch(()=>({}));
-      if(r.status===401){
-        showToast('Invalid API key — tap 🔑 Key to fix');
-        setRefreshState(false);
-        return;
-      }
+      if(r.status===401){ showToast('Invalid API key — tap 🔑 Key to fix'); setRefreshState(false); return; }
       throw new Error(errBody.error?.message || `HTTP ${r.status}`);
     }
     const d=await r.json();
-    // Extract text content blocks (after tool use)
     const textBlocks=d.content.filter(c=>c.type==='text');
-    if(!textBlocks.length)throw new Error('No text response');
+    if(!textBlocks.length) throw new Error('No text in response');
     const raw=textBlocks.map(c=>c.text).join('').trim();
-    // Parse — find JSON array in response
-    const match=raw.match(/\[\s*\{[\s\S]*\}\s*\]/);
-    if(!match)throw new Error('No JSON array found');
+    // Strip any accidental markdown fences
+    const cleaned=raw.replace(/```json|```/g,'').trim();
+    // Find the JSON array
+    const match=cleaned.match(/\[\s*\{[\s\S]*\}\s*\]/);
+    if(!match) throw new Error('No JSON array found — got: '+cleaned.slice(0,120));
     const picks=JSON.parse(match[0]);
-    if(!Array.isArray(picks)||picks.length<4)throw new Error('Invalid picks array');
-    // Validate each pick has required fields
+    if(!Array.isArray(picks)||picks.length<4) throw new Error('Too few picks: '+picks.length);
     const required=['t','n','s','sc','beta','iv','mom','stars','color','thesis','strat','strat2','exitStop','exitTarget','exitTime'];
     const valid=picks.filter(p=>required.every(k=>p[k]!==undefined));
-    if(valid.length<4)throw new Error('Too few valid picks');
+    if(valid.length<4) throw new Error('Too few valid picks: '+valid.length);
     const ts=Date.now();
     savePicksCache(valid,ts);
     applyPicksData(valid,ts);
     showToast('✓ '+valid.length+' fresh picks loaded');
   }catch(e){
     console.error('Refresh error:',e);
-    showToast('Refresh failed — ' + (e.message||'check connection'));
+    showToast('Refresh failed — ' + (e.message||'check connection').slice(0,60));
   }
   setRefreshState(false);
 }
