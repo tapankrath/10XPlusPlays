@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#111111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="10XPlus">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.svg">
+<title>10XPlus — Options Playbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='%23111'/><rect x='8' y='40' width='9' height='16' fill='%2322a04d'/><rect x='20' y='30' width='9' height='26' fill='%2322a04d'/><rect x='32' y='20' width='9' height='36' fill='%23e02020'/><rect x='44' y='12' width='9' height='44' fill='%2322a04d'/><rect x='8' y='8' width='48' height='3' fill='rgba(255,255,255,0.15)'/></svg>"><rect width='64' height='64' rx='14' fill='%23111'/><text x='32' y='44' font-family='Georgia,serif' font-weight='900' font-size='34' text-anchor='middle' fill='%23e8c840'>10X</text></svg>">
+<style>
+:root {
+  --bg:        #f7f5f0;
+  --paper:     #ffffff;
+  --surface:   #f0ede6;
+  --surface2:  #e4e0d8;
+  --ink:       #111111;
+  --ink2:      #333333;
+  --muted:     #6b6560;
+  --rule:      rgba(0,0,0,0.13);
+  --rule2:     rgba(0,0,0,0.22);
+
+  --bull:      #1a7a3a;
+  --bull-mid:  #22a04d;
+  --bull-bg:   #e8f5ed;
+  --bull-rule: #1a7a3a;
+
+  --bear:      #c01515;
+  --bear-mid:  #e02020;
+  --bear-bg:   #fdeaea;
+  --bear-rule: #c01515;
+
+  --gold:      #c8a000;
+  --gold-bg:   #fdf7e3;
+
+  --accent:    #111111;
+
+  --display: 'Bebas Neue', sans-serif;
+  --serif:   'Instrument Serif', Georgia, serif;
+  --sans:    'Inter', system-ui, sans-serif;
+
+  --nav-h:  56px;
+  --tab-h:  46px;
+  --r:      12px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── SPLASH ─── */
+#splash {
+  position: fixed; inset: 0; z-index: 999;
+  background: #111111;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 0;
+  animation: splashFade 0.45s ease 2s forwards;
+}
+@keyframes splashFade { to { opacity:0; pointer-events:none; } }
+
+.splash-logo {
+  position: relative;
+  width: 110px; height: 110px;
+  animation: logoScale 0.7s cubic-bezier(0.34,1.5,0.64,1) 0.15s both;
+}
+@keyframes logoScale { from { transform:scale(0.3) rotate(-4deg); opacity:0; } to { transform:scale(1) rotate(0deg); opacity:1; } }
+
+.splash-ring {
+  position: absolute; inset: 0;
+  background: #111;
+  border: 3px solid rgba(255,255,255,0.15);
+  box-shadow: 4px 4px 0 var(--bull), -2px -2px 0 var(--bear), 0 12px 40px rgba(0,0,0,0.5);
+}
+.splash-inner {
+  position: absolute; inset: 0;
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 5px; padding: 12px 14px 18px;
+}
+.splash-bar {
+  flex: 1; border-radius: 0;
+  animation: barRise 0.5s cubic-bezier(0.34,1.4,0.64,1) both;
+}
+.splash-bar:nth-child(1){ background:var(--bull-mid); height:30%; animation-delay:0.5s; }
+.splash-bar:nth-child(2){ background:var(--bull-mid); height:50%; animation-delay:0.6s; }
+.splash-bar:nth-child(3){ background:var(--bear-mid); height:40%; animation-delay:0.65s; }
+.splash-bar:nth-child(4){ background:var(--bull-mid); height:75%; animation-delay:0.7s; }
+.splash-bar:nth-child(5){ background:var(--bear-mid); height:55%; animation-delay:0.75s; }
+.splash-bar:nth-child(6){ background:var(--bull-mid); height:90%; animation-delay:0.8s; }
+@keyframes barRise { from { transform:scaleY(0); transform-origin:bottom; opacity:0; } to { transform:scaleY(1); opacity:1; } }
+.splash-ten { display:none; }
+
+.splash-title {
+  font-family: var(--display);
+  font-size: 28px;
+  letter-spacing: 3px;
+  color: #ffffff;
+  margin-top: 22px;
+  animation: wordUp 0.5s ease 0.75s both;
+}
+.splash-sub {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  margin-top: 6px;
+  animation: wordUp 0.4s ease 0.95s both;
+}
+@keyframes wordUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* Candle decorations on splash */
+.splash-candles {
+  display: flex; gap: 6px; margin-top: 28px;
+  animation: wordUp 0.4s ease 1.1s both;
+}
+.sc { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.sc-wick { width:1.5px; height:6px; border-radius:1px; }
+.sc-body { width:9px; border-radius:2px; }
+.sc.bull .sc-wick { background: var(--bull-mid); }
+.sc.bull .sc-body { background: var(--bull-mid); }
+.sc.bear .sc-wick { background: var(--bear-mid); }
+.sc.bear .sc-body { background: var(--bear-mid); }
+
+/* ─── NAV ─── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  height: calc(var(--nav-h) + env(safe-area-inset-top,0));
+  padding: calc(env(safe-area-inset-top,0) + 0px) 14px 0;
+  background: #111111;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.28);
+}
+.nav-logo { display:flex; align-items:center; gap:9px; }
+
+/* Small ring logo in nav */
+.nav-ring {
+  width: 34px; height: 34px;
+  background: #1a1a1a;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 2px; padding: 4px 4px 5px;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 0 var(--bull-mid);
+}
+.nav-ring-inner { display:contents; }
+.nav-ring-inner span { display:none; }
+.nav-ring::before,
+.nav-ring::after,
+.nav-ring-b3,
+.nav-ring-b4 {
+  content: "";
+  flex: 1; border-radius: 0;
+}
+.nav-ring::before { background: var(--bull-mid); height: 45%; align-self: flex-end; }
+.nav-ring::after  { background: var(--bull-mid); height: 72%; align-self: flex-end; }
+
+.nav-ring-svg { flex-shrink:0; box-shadow: 2px 2px 0 var(--bull-mid); }
+.nav-title {
+  font-family: var(--display);
+  font-size: 20px;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  line-height: 1;
+}
+.nav-title em { font-style:normal; color: #e8c840; }
+
+.nav-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.75);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-family: var(--sans);
+  letter-spacing: 0.04em;
+}
+
+/* ─── TABS ─── */
+.tabs {
+  display: flex; overflow-x: auto; scrollbar-width: none;
+  background: #1a1a1a;
+  border-bottom: 2px solid #2a2a2a;
+  padding: 0 2px;
+}
+.tabs::-webkit-scrollbar { display:none; }
+.tab {
+  flex-shrink: 0;
+  height: var(--tab-h);
+  padding: 0 13px;
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.38);
+  border: none; background: none; cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  font-family: var(--sans);
+  margin-bottom: -2px;
+}
+.tab.active { color: #fff; border-bottom-color: var(--bull-mid); }
+.tab-ico { font-size: 13px; }
+
+/* ─── SECTIONS ─── */
+.section { display:none; padding: 14px 13px calc(20px + var(--safe-b)); max-width: 540px; margin: 0 auto; }
+.section.active { display:block; }
+
+/* ─── SECTION HEADING ─── */
+.sh {
+  font-family: var(--display);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin: 20px 0 11px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sh::after { content:''; flex:1; height:1px; background: linear-gradient(to right, var(--rule2), transparent); }
+.sh:first-child { margin-top: 0; }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--paper);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-bottom: 11px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 14px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.card-bull {
+  border-left: 3px solid var(--bull);
+  background: var(--bull-bg);
+  box-shadow: 0 2px 12px rgba(26,122,58,0.10);
+}
+.card-accent {
+  border-left: 4px solid var(--bear);
+  background: #fff;
+}
+
+/* ─── STOCK CARDS ─── */
+.stock-card {
+  background: var(--paper);
+  border-radius: var(--r);
+  margin-bottom: 11px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 18px rgba(0,0,0,0.07);
+  border: 1px solid rgba(0,0,0,0.07);
+  overflow: hidden;
+  cursor: pointer;
+}
+.sc-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 13px 13px 0;
+}
+.sc-ticker {
+  font-family: var(--display);
+  font-size: 30px;
+  letter-spacing: 1px;
+  line-height: 1;
+  color: var(--ink);
+}
+.sc-sector {
+  font-size: 9px; font-weight: 800;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 20px;
+  border: 1.5px solid;
+  margin-top: 3px;
+}
+.s-space { background:#eee9ff; color:#4422cc; border-color:#4422cc; }
+.s-ai    { background:#e8f4f0; color:#0a6644; border-color:#0a6644; }
+.s-bio   { background:#e8f5ed; color:#155a28; border-color:#155a28; }
+.s-def   { background:#fff3e0; color:#8a4800; border-color:#8a4800; }
+.s-btc   { background:#fdeaea; color:#b01010; border-color:#b01010; }
+.s-q     { background:#f5eeff; color:#660099; border-color:#660099; }
+
+.sc-company { font-size: 11px; color: var(--muted); font-weight: 600; padding: 4px 13px 10px; }
+
+.sc-metrics {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+}
+.sc-metric {
+  padding: 9px 8px; text-align: center;
+  border-right: 1px solid var(--rule);
+}
+.sc-metric:last-child { border-right: none; }
+.sc-metric-lbl {
+  font-size: 8px; font-weight: 800;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 3px;
+}
+.sc-metric-val { font-family: var(--display); font-size: 18px; letter-spacing: 0.5px; }
+
+.sc-body { padding: 0 13px; }
+.sc-thesis {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--ink2);
+  line-height: 1.65;
+  padding: 11px 0 0;
+}
+.sc-pill {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.04em;
+  background: #111; color: #fff;
+  border-radius: 4px;
+  padding: 4px 10px;
+  margin: 9px 0 13px;
+}
+.sc-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 13px;
+  border-top: 1px solid var(--rule);
+}
+.sc-stars { color: var(--bear); font-size: 13px; letter-spacing: 1px; }
+.sc-hint { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* ─── STRATEGY CARDS ─── */
+.strat-card {
+  background: var(--paper);
+  border-radius: var(--r);
+  margin-bottom: 11px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 14px rgba(0,0,0,0.06);
+}
+.strat-head {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--rule);
+}
+.strat-name { font-family: var(--display); font-size: 22px; letter-spacing: 0.5px; line-height: 1.1; }
+.strat-sub { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 3px; letter-spacing: 0.02em; }
+.strat-rows { padding: 0 14px; }
+.strat-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 12px;
+}
+.strat-row:last-child { border: none; }
+.strat-lbl { font-weight: 700; color: var(--muted); font-size: 11px; letter-spacing: 0.04em; }
+.strat-val { font-weight: 700; }
+.strat-thesis {
+  font-family: var(--serif); font-style: italic;
+  font-size: 13px; color: var(--ink2); line-height: 1.6;
+  padding: 10px 14px 14px; border-top: 1px solid var(--rule);
+  background: var(--surface);
+}
+.stars-r { color: var(--bear); font-size: 14px; letter-spacing: 2px; }
+
+/* ─── TICKER CHECK ─── */
+.search-wrap { position: relative; margin-bottom: 12px; }
+.search-input {
+  width: 100%;
+  background: var(--paper);
+  border: 2px solid var(--rule2);
+  border-radius: var(--r);
+  padding: 15px 58px 15px 16px;
+  font-size: 20px;
+  font-family: var(--display);
+  letter-spacing: 2px;
+  color: var(--ink);
+  outline: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  transition: border-color 0.15s;
+}
+.search-input:focus { border-color: var(--bull); }
+.search-input::placeholder { font-family: var(--sans); font-size: 13px; font-weight: 500; letter-spacing: 0; color: #aaa; }
+.search-btn {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: #111; border: none; border-radius: 8px;
+  padding: 10px 14px; color: white;
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer;
+  font-family: var(--sans);
+}
+.search-btn:active { background: var(--bull); }
+
+.quick-chips { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:14px; }
+.qchip {
+  font-family: var(--display);
+  font-size: 14px; letter-spacing: 0.5px;
+  padding: 5px 13px;
+  border-radius: 6px;
+  background: var(--paper);
+  border: 1.5px solid var(--rule2);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  transition: all 0.12s;
+}
+.qchip:active { background: #111; color: #fff; border-color: #111; }
+
+.result-card {
+  background: var(--paper);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.10);
+  border: 1px solid var(--rule);
+}
+.result-head { padding: 14px 14px 12px; border-bottom: 1px solid var(--rule); }
+.result-ticker { font-family: var(--display); font-size: 36px; letter-spacing: 1px; line-height: 1; }
+.result-name { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 3px; }
+.result-scores { padding: 12px 14px; }
+.score-row { margin-bottom: 11px; }
+.score-label-row { display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-bottom:5px; }
+.score-bar { background: var(--surface2); border-radius: 3px; height: 8px; overflow:hidden; }
+.score-fill { height:100%; border-radius:3px; transition: width 0.6s cubic-bezier(0.34,1.1,0.64,1); }
+.sf-m { background: linear-gradient(90deg, #111, #444); }
+.sf-v { background: linear-gradient(90deg, var(--bear), #e05050); }
+.sf-o { background: linear-gradient(90deg, var(--bull), var(--bull-mid)); }
+
+.verdict {
+  margin: 0 14px 14px;
+  border-radius: 8px;
+  padding: 11px 13px;
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 600;
+}
+.v-go     { background: var(--bull-bg);  border: 1.5px solid var(--bull);  color: var(--bull); }
+.v-caution{ background: #fffbea;         border: 1.5px solid #c8a000;      color: #7a5c00; }
+.v-pass   { background: var(--bear-bg);  border: 1.5px solid var(--bear);  color: var(--bear); }
+.sugg-strat {
+  margin: 0 14px 14px;
+  background: #111; color: white;
+  border-radius: 8px; padding: 10px 13px;
+  font-size: 12px; font-weight: 600; line-height: 1.5;
+}
+
+/* ─── PLAYBOOK ─── */
+.pb-form-card {
+  background: var(--paper);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-bottom: 11px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border: 1px solid var(--rule);
+}
+.pb-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--rule2);
+  border-radius: 9px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: var(--sans);
+  color: var(--ink);
+  font-weight: 500;
+  outline: none;
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+.pb-input:focus { border-color: var(--bull); background: #fff; }
+.pb-input::placeholder { color: #bbb; }
+textarea.pb-input { resize: none; height: 74px; line-height: 1.5; }
+select.pb-input {
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 4 5-4' stroke='%23888' stroke-width='1.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 13px center;
+  padding-right: 35px;
+}
+.btn-row { display:flex; gap:8px; margin-bottom:2px; }
+.btn-add {
+  flex: 1;
+  background: #111; border: none; border-radius: 9px;
+  padding: 14px; font-size: 14px; font-weight: 800;
+  color: white; cursor: pointer; font-family: var(--sans);
+  letter-spacing: 0.03em;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  transition: background 0.15s;
+}
+.btn-add:active { background: var(--bull); }
+.btn-clr {
+  background: var(--surface); border: 1.5px solid var(--rule2);
+  border-radius: 9px; padding: 14px 16px;
+  font-size: 13px; font-weight: 700;
+  color: var(--muted); cursor: pointer; font-family: var(--sans);
+}
+
+.pb-entry {
+  background: var(--paper);
+  border-radius: var(--r);
+  margin-bottom: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 3px 12px rgba(0,0,0,0.06);
+  position: relative;
+}
+.pb-entry-bar { height: 3px; }
+.pb-entry-bar.bull { background: linear-gradient(90deg, var(--bull), var(--bull-mid)); }
+.pb-entry-bar.bear { background: linear-gradient(90deg, var(--bear-mid), var(--bear)); }
+.pb-entry-inner { padding: 12px 13px 12px; }
+.pb-entry-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:5px; padding-right: 24px; }
+.pb-eticker { font-family: var(--display); font-size: 22px; letter-spacing: 0.5px; }
+.pb-edate { font-size: 10px; color: var(--muted); font-weight: 700; letter-spacing: 0.04em; margin-top: 3px; }
+.pb-etag {
+  display: inline-block; font-size: 10px; font-weight: 800;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  background: #111; color: #fff;
+  padding: 3px 9px; border-radius: 4px; margin-bottom: 6px;
+}
+.pb-ecatalyst { font-size: 11px; color: var(--bull); font-weight: 700; margin-bottom: 4px; }
+.pb-enotes { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--ink2); line-height: 1.55; }
+.pb-echips { display:flex; gap:6px; flex-wrap:wrap; margin-top:9px; }
+.pb-chip {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+  padding: 3px 9px; border-radius: 5px;
+  border: 1px solid; font-family: var(--sans);
+}
+.chip-neutral { background: var(--surface); color: var(--ink2); border-color: var(--rule2); }
+.chip-green   { background: var(--bull-bg); color: var(--bull); border-color: var(--bull); }
+.chip-red     { background: var(--bear-bg); color: var(--bear); border-color: var(--bear); }
+.pb-del {
+  position: absolute; top: 11px; right: 11px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--rule2);
+  color: var(--muted); font-size: 14px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.empty-state {
+  text-align: center; padding: 50px 20px;
+  color: var(--muted); font-size: 14px; font-weight: 600;
+}
+.empty-icon { font-size: 42px; margin-bottom: 12px; opacity: 0.3; }
+
+/* ─── SIZING ─── */
+.sizing-card {
+  background: var(--paper);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-bottom: 11px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 4px 14px rgba(0,0,0,0.06);
+}
+.range-row { margin-bottom: 16px; }
+.range-row:last-child { margin-bottom: 0; }
+.range-top { display:flex; justify-content:space-between; margin-bottom:7px; }
+.range-lbl { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.03em; }
+.range-val { font-family: var(--display); font-size: 16px; letter-spacing: 0.5px; color: var(--ink); }
+input[type=range] { width:100%; accent-color: var(--bear); cursor:pointer; }
+
+.stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:9px; margin-bottom:11px; }
+.stat-box {
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 12px 8px; text-align:center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 3px 10px rgba(0,0,0,0.05);
+  border: 1px solid var(--rule);
+}
+.stat-lbl { font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform:uppercase; color: var(--muted); margin-bottom: 5px; }
+.stat-num { font-family: var(--display); font-size: 18px; letter-spacing: 0.5px; }
+
+.alloc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin-bottom:11px; }
+.alloc-box {
+  background: var(--paper);
+  border-radius: 9px;
+  padding: 9px 4px; text-align:center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  border: 1px solid var(--rule);
+}
+.alloc-t { font-family: var(--display); font-size: 13px; letter-spacing: 0.5px; }
+.alloc-$ { font-size: 11px; font-weight: 700; color: var(--bull); margin: 3px 0; }
+.alloc-p { font-size: 9px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
+
+.scenario-card {
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex; justify-content:space-between; align-items:center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  border: 1px solid var(--rule);
+}
+.sc-title { font-family: var(--display); font-size: 17px; letter-spacing: 0.5px; }
+.sc-desc { font-size: 11px; color: var(--muted); font-weight: 600; margin-top:2px; }
+.sc-roi { font-family: var(--display); font-size: 22px; letter-spacing: 0.5px; text-align:right; }
+.sc-pnl { font-size: 10px; font-weight: 700; color: var(--muted); text-align:right; margin-top:2px; }
+
+/* ─── BANNERS ─── */
+.info-banner {
+  background: var(--bull-bg);
+  border-left: 3px solid var(--bull);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 13px;
+  font-size: 12px; font-weight: 600; color: var(--bull);
+  margin-bottom: 14px; line-height: 1.5;
+}
+.warn-banner {
+  background: var(--bear-bg);
+  border-left: 3px solid var(--bear);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 13px;
+  font-size: 12px; font-weight: 600; color: var(--bear);
+  margin-bottom: 14px; line-height: 1.5;
+}
+
+/* ─── LOADING ─── */
+.loading { display:flex; align-items:center; justify-content:center; padding:32px; color:var(--muted); font-size:13px; font-weight:600; gap:10px; }
+.spinner { width:18px; height:18px; border:2.5px solid var(--rule2); border-top-color: var(--bear); border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ─── TOAST ─── */
+.toast { position:fixed; bottom:calc(18px + var(--safe-b)); left:50%; transform:translateX(-50%); background:#111; border-radius:8px; padding:10px 22px; font-size:13px; color:#fff; font-weight:700; z-index:999; opacity:0; transition:opacity 0.22s; pointer-events:none; white-space:nowrap; box-shadow:0 4px 20px rgba(0,0,0,0.25); letter-spacing:0.02em; }
+.toast.show { opacity:1; }
+
+/* ─── COLORS ─── */
+.t-bull { color: var(--bull); }
+.t-bear { color: var(--bear); }
+.t-gold { color: var(--gold); }
+.t-muted { color: var(--muted); }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
+.stock-card, .strat-card, .result-card, .pb-entry { animation: fadeUp 0.2s ease; }
+</style>
+</head>
+<body>
+
+<!-- ══ SPLASH ══ -->
+<div id="splash">
+  <div class="splash-logo">
+    <div class="splash-ring">
+      <div class="splash-inner">
+        <div class="splash-bar"></div>
+        <div class="splash-bar"></div>
+        <div class="splash-bar"></div>
+        <div class="splash-bar"></div>
+        <div class="splash-bar"></div>
+        <div class="splash-bar"></div>
+      </div>
+    </div>
+  </div>
+  <div class="splash-title">10XPLUS</div>
+  <div class="splash-sub">Options · Momentum · Speculative</div>
+  <div class="splash-candles">
+    <div class="sc bull"><div class="sc-wick"></div><div class="sc-body" style="height:18px"></div></div>
+    <div class="sc bear"><div class="sc-wick"></div><div class="sc-body" style="height:28px"></div></div>
+    <div class="sc bull"><div class="sc-wick"></div><div class="sc-body" style="height:22px"></div></div>
+    <div class="sc bear"><div class="sc-wick"></div><div class="sc-body" style="height:14px"></div></div>
+    <div class="sc bull"><div class="sc-wick"></div><div class="sc-body" style="height:32px"></div></div>
+    <div class="sc bull"><div class="sc-wick"></div><div class="sc-body" style="height:24px"></div></div>
+    <div class="sc bear"><div class="sc-wick"></div><div class="sc-body" style="height:18px"></div></div>
+    <div class="sc bull"><div class="sc-wick"></div><div class="sc-body" style="height:38px"></div></div>
+  </div>
+</div>
+
+<!-- ══ NAV ══ -->
+<div class="nav">
+  <div class="nav-logo">
+    <div class="nav-ring-svg">
+      <svg viewBox="0 0 34 34" width="34" height="34" xmlns="http://www.w3.org/2000/svg">
+        <rect width="34" height="34" fill="#1a1a1a" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+        <rect x="4" y="22" width="4" height="8" fill="#22a04d"/>
+        <rect x="10" y="17" width="4" height="13" fill="#22a04d"/>
+        <rect x="16" y="13" width="4" height="17" fill="#e02020"/>
+        <rect x="22" y="8" width="4" height="22" fill="#22a04d"/>
+        <rect x="28" y="11" width="4" height="19" fill="#e02020"/>
+        <rect x="4" y="4" width="26" height="2" fill="rgba(255,255,255,0.12)"/>
+      </svg>
+    </div>
+    <div class="nav-title">10X<em>PLUS</em></div>
+  </div>
+  <div class="nav-badge" id="navBadge">8 plays</div>
+</div>
+
+<!-- ══ TABS ══ -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('picks',this)"><span class="tab-ico">📈</span> Picks</button>
+  <button class="tab" onclick="showTab('strategies',this)"><span class="tab-ico">⚡</span> Strategies</button>
+  <button class="tab" onclick="showTab('ticker',this)"><span class="tab-ico">🔍</span> Ticker</button>
+  <button class="tab" onclick="showTab('builder',this)"><span class="tab-ico">📓</span> Playbook</button>
+  <button class="tab" onclick="showTab('sizing',this)"><span class="tab-ico">💰</span> Sizing</button>
+</div>
+
+<!-- ══ PICKS ══ -->
+<div class="section active" id="picks">
+  <div class="info-banner">Tap any card to reveal the full strategy. Sorted by 10x fit.</div>
+  <div id="stockList"></div>
+</div>
+
+<!-- ══ STRATEGIES ══ -->
+<div class="section" id="strategies">
+  <div class="sh">Ranked by 10x potential</div>
+
+  <div class="strat-card card-accent">
+    <div class="strat-head">
+      <div class="strat-name">⚡ Deep OTM LEAPS</div>
+      <div class="strat-sub">1–2yr calls, 30–50% out of the money — pure convexity play</div>
+    </div>
+    <div class="strat-rows">
+      <div class="strat-row"><span class="strat-lbl">Max loss</span><span class="strat-val t-bear">100% of premium</span></div>
+      <div class="strat-row"><span class="strat-lbl">Target gain</span><span class="strat-val t-bull">500–2000%</span></div>
+      <div class="strat-row"><span class="strat-lbl">Best for</span><span class="strat-val" style="font-size:11px">RKLB · ASTS · BBAI · MSTR</span></div>
+      <div class="strat-row"><span class="strat-lbl">Enter when</span><span class="strat-val" style="font-size:11px">After IV crush, on dip</span></div>
+      <div class="strat-row"><span class="strat-lbl">10x fit</span><span class="stars-r">★★★★★</span></div>
+    </div>
+    <div class="strat-thesis">Buy far-dated calls cheap. Stock goes 3x, LEAPS can go 20x. Size small — 5 to 8% per play. Exit at 60–70% loss; don't let time bleed them to zero.</div>
+  </div>
+
+  <div class="strat-card">
+    <div class="strat-head">
+      <div class="strat-name">🔄 Diagonal Spread</div>
+      <div class="strat-sub">Long LEAPS + sell short-dated calls monthly</div>
+    </div>
+    <div class="strat-rows">
+      <div class="strat-row"><span class="strat-lbl">Max loss</span><span class="strat-val" style="color:var(--gold)">Net debit only</span></div>
+      <div class="strat-row"><span class="strat-lbl">Target gain</span><span class="strat-val t-bull">200–800%</span></div>
+      <div class="strat-row"><span class="strat-lbl">Best for</span><span class="strat-val" style="font-size:11px">MSTR · PLTR · IONQ</span></div>
+      <div class="strat-row"><span class="strat-lbl">Enter when</span><span class="strat-val" style="font-size:11px">High IV environment</span></div>
+      <div class="strat-row"><span class="strat-lbl">10x fit</span><span class="stars-r">★★★★☆</span></div>
+    </div>
+    <div class="strat-thesis">Sell monthly OTM calls against LEAPS. At MSTR's 90 IV, recover 20–30% of cost basis per month. After 3–4 cycles you're nearly free-rolling the long.</div>
+  </div>
+
+  <div class="strat-card">
+    <div class="strat-head">
+      <div class="strat-name">🚀 Call Ratio Backspread 1×2</div>
+      <div class="strat-sub">Sell 1 ATM call, buy 2–3 OTM calls</div>
+    </div>
+    <div class="strat-rows">
+      <div class="strat-row"><span class="strat-lbl">Max loss</span><span class="strat-val t-bear">Strike spread × 100</span></div>
+      <div class="strat-row"><span class="strat-lbl">Target gain</span><span class="strat-val t-bull">Unlimited if it rips</span></div>
+      <div class="strat-row"><span class="strat-lbl">Best for</span><span class="strat-val" style="font-size:11px">CRDO · PLTR · RKLB</span></div>
+      <div class="strat-row"><span class="strat-lbl">Enter when</span><span class="strat-val" style="font-size:11px">IV suppressed pre-move</span></div>
+      <div class="strat-row"><span class="strat-lbl">10x fit</span><span class="stars-r">★★★★☆</span></div>
+    </div>
+    <div class="strat-thesis">Near credit or tiny debit. Lose in the middle, win explosively if it rips. Enter only when IV is suppressed — you want expansion working for you after entry.</div>
+  </div>
+
+  <div class="strat-card">
+    <div class="strat-head">
+      <div class="strat-name">📅 Calendar Spread</div>
+      <div class="strat-sub">Sell front-month IV, own back-month vol — same strike</div>
+    </div>
+    <div class="strat-rows">
+      <div class="strat-row"><span class="strat-lbl">Max loss</span><span class="strat-val" style="color:var(--gold)">Net debit ~$0.50–1.00</span></div>
+      <div class="strat-row"><span class="strat-lbl">Target gain</span><span class="strat-val t-bull">100–300% per cycle</span></div>
+      <div class="strat-row"><span class="strat-lbl">Best for</span><span class="strat-val" style="font-size:11px">RXRX · IONQ · ASTS</span></div>
+      <div class="strat-row"><span class="strat-lbl">Enter when</span><span class="strat-val" style="font-size:11px">Before known catalyst</span></div>
+      <div class="strat-row"><span class="strat-lbl">10x fit</span><span class="stars-r">★★★☆☆</span></div>
+    </div>
+    <div class="strat-thesis">Place ATM before binary event. Front IV spikes — you sell it. If catalyst is delayed the front expires worthless; roll for free. Best on biotech before trial readouts.</div>
+  </div>
+</div>
+
+<!-- ══ TICKER CHECK ══ -->
+<div class="section" id="ticker">
+  <div class="info-banner">AI-powered suitability check. Type any ticker to score it for 10x option plays.</div>
+  <div class="search-wrap">
+    <input class="search-input" id="tickerInput" placeholder="e.g. NVDA, HOOD, COIN…" maxlength="6"
+      oninput="this.value=this.value.toUpperCase()"
+      onkeydown="if(event.key==='Enter'){this.blur();checkTicker();}">
+    <button class="search-btn" onclick="checkTicker()">GO →</button>
+  </div>
+  <div class="quick-chips">
+    <div class="qchip" onclick="quickCheck('NVDA')">NVDA</div>
+    <div class="qchip" onclick="quickCheck('TSLA')">TSLA</div>
+    <div class="qchip" onclick="quickCheck('COIN')">COIN</div>
+    <div class="qchip" onclick="quickCheck('HOOD')">HOOD</div>
+    <div class="qchip" onclick="quickCheck('AMD')">AMD</div>
+    <div class="qchip" onclick="quickCheck('SMCI')">SMCI</div>
+  </div>
+  <div id="tickerResult"></div>
+</div>
+
+<!-- ══ PLAYBOOK ══ -->
+<div class="section" id="builder">
+  <div class="sh">New Play</div>
+  <div class="pb-form-card">
+    <input class="pb-input" id="pbTicker" placeholder="Ticker (e.g. MSTR)" oninput="this.value=this.value.toUpperCase()" maxlength="6">
+    <select class="pb-input" id="pbStrategy">
+      <option value="">Select strategy…</option>
+      <option>Deep OTM LEAPS</option>
+      <option>Diagonal Spread</option>
+      <option>Call Ratio Backspread 1×2</option>
+      <option>Calendar Spread</option>
+      <option>Long Straddle</option>
+      <option>Bull Call Spread</option>
+      <option>Custom</option>
+    </select>
+    <input class="pb-input" id="pbExpiry" placeholder="Expiry (e.g. Jan 2027)">
+    <input class="pb-input" id="pbStrike" placeholder="Strike / structure (e.g. $20C)">
+    <input class="pb-input" id="pbEntry" placeholder="Entry / debit paid (e.g. $1.50)">
+    <input class="pb-input" id="pbCatalyst" placeholder="Catalyst (e.g. satellite launch Q3)">
+    <textarea class="pb-input" id="pbNotes" placeholder="Notes — why this, heard from who, conviction…"></textarea>
+    <div class="btn-row">
+      <button class="btn-add" onclick="addPlay()">+ Add to Playbook</button>
+      <button class="btn-clr" onclick="clearForm()">Clear</button>
+    </div>
+  </div>
+  <div class="sh">My Plays <span id="playCount" style="color:var(--bear)"></span></div>
+  <div id="playbookList"></div>
+</div>
+
+<!-- ══ SIZING ══ -->
+<div class="section" id="sizing">
+  <div class="warn-banner">⚠️ Illustrative only — options can go to zero. Never risk more than you can lose entirely.</div>
+  <div class="sh">Parameters</div>
+  <div class="sizing-card">
+    <div class="range-row">
+      <div class="range-top"><span class="range-lbl">Total Capital</span><span class="range-val" id="capVal">$25,000</span></div>
+      <input type="range" min="5000" max="200000" step="5000" value="25000" id="capSlider" oninput="updateSizing()">
+    </div>
+    <div class="range-row">
+      <div class="range-top"><span class="range-lbl">Risk Per Play</span><span class="range-val" id="riskVal">10%</span></div>
+      <input type="range" min="3" max="20" step="1" value="10" id="riskSlider" oninput="updateSizing()">
+    </div>
+    <div class="range-row">
+      <div class="range-top"><span class="range-lbl">Number of Plays</span><span class="range-val" id="playsVal">6</span></div>
+      <input type="range" min="3" max="10" step="1" value="6" id="playsSlider" oninput="updateSizing()">
+    </div>
+    <div class="range-row">
+      <div class="range-top"><span class="range-lbl">Cash Reserve</span><span class="range-val" id="cashVal">25%</span></div>
+      <input type="range" min="10" max="40" step="5" value="25" id="cashSlider" oninput="updateSizing()">
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-lbl">Per Play</div><div class="stat-num t-bull" id="perPlay">$2,500</div></div>
+    <div class="stat-box"><div class="stat-lbl">Max Loss</div><div class="stat-num t-bear" id="maxLoss">$12K</div></div>
+    <div class="stat-box"><div class="stat-lbl">10x Target</div><div class="stat-num t-bull" id="target">$150K</div></div>
+  </div>
+
+  <div class="sh">Allocation</div>
+  <div class="alloc-grid" id="allocGrid"></div>
+
+  <div class="sh" style="margin-top:18px">Scenarios</div>
+  <div class="scenario-card">
+    <div><div class="sc-title t-bear">Bear 🐻</div><div class="sc-desc">1 winner · rest expire</div></div>
+    <div><div class="sc-roi t-bear" id="bearRoi">−45%</div><div class="sc-pnl" id="bearPnl">−$11,250</div></div>
+  </div>
+  <div class="scenario-card">
+    <div><div class="sc-title" style="color:var(--gold)">Base 📊</div><div class="sc-desc">2–3 winners</div></div>
+    <div><div class="sc-roi" style="color:var(--gold)" id="baseRoi">+115%</div><div class="sc-pnl" id="basePnl">+$28K</div></div>
+  </div>
+  <div class="scenario-card">
+    <div><div class="sc-title t-bull">Bull 🚀</div><div class="sc-desc">4 winners + 1 moonshot</div></div>
+    <div><div class="sc-roi t-bull" id="bullRoi">+540%</div><div class="sc-pnl" id="bullPnl">+$135K</div></div>
+  </div>
+  <div class="scenario-card" style="border:1.5px solid var(--bull);background:var(--bull-bg)">
+    <div><div class="sc-title t-bull">Dream 🌙</div><div class="sc-desc">2 moonshots carry all</div></div>
+    <div><div class="sc-roi t-bull" id="dreamRoi">+675%</div><div class="sc-pnl t-bull" id="dreamPnl">+$168K</div></div>
+  </div>
+  <p style="font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;font-weight:600;padding:0 2px">Scenarios assume $25K portfolio at 10% risk per play. Adjust sliders above to recalculate for your actual capital.</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+setTimeout(()=>{ const s=document.getElementById('splash'); if(s){ s.style.transition='opacity 0.45s'; s.style.opacity='0'; setTimeout(()=>s.remove(),460); } }, 2050);
+
+const STOCKS = [
+  { t:'RKLB', n:'Rocket Lab USA',          s:'Space',     sc:'s-space', beta:2.8, iv:68, cat:'Contracts', thesis:'Rides the SpaceX IPO halo effect and NATO defense spending surge. Every launch is a catalyst. Long LEAPS give explosive leverage on a full re-rating of the business.', strat:"Deep OTM LEAPS — Jan'27 $20–25C", stars:5 },
+  { t:'ASTS', n:'AST SpaceMobile',          s:'Satellite', sc:'s-space', beta:3.1, iv:75, cat:'Sat launch', thesis:'Direct-to-cell satellite play with a TAM of billions of devices. AT&T and Verizon partner deals. Each constellation deployment is a binary event — calendars around launch dates capture the IV spike perfectly.', strat:'Calendar spreads around launches + LEAPS', stars:5 },
+  { t:'MSTR', n:'Strategy (MicroStrategy)', s:'BTC Proxy', sc:'s-btc',   beta:4.2, iv:90, cat:'BTC price', thesis:'Leveraged Bitcoin proxy — moves 2 to 3× BTC on big days. The highest IV on this list makes diagonals the smart play. Sell weekly or monthly calls aggressively to hammer down your LEAPS cost basis.', strat:"Diagonal spread — sell weeklies vs Jan'27 LEAPS", stars:5 },
+  { t:'IONQ', n:'IonQ Inc.',                s:'Quantum',   sc:'s-q',     beta:3.4, iv:80, cat:'Milestones', thesis:'Pure quantum computing narrative. Explodes on any tech announcement. High IV means sell calendars around earnings and buy LEAPS deep on dips after IV crush.', strat:'Deep OTM LEAPS + Calendar around earnings', stars:4 },
+  { t:'PLTR', n:'Palantir Technologies',    s:'AI/Defense',sc:'s-ai',    beta:2.1, iv:55, cat:'Gov contracts', thesis:'AI plus defense secular story with the best options chain on this list. AIP platform adoption is accelerating. Elevated IV makes diagonals attractive — sell near-term theta while owning long-dated upside.', strat:"Diagonal spread — long Jan'27 ATM call", stars:4 },
+  { t:'CRDO', n:'Credo Technology',         s:'Semis/AI',  sc:'s-ai',    beta:2.6, iv:62, cat:'AI datacenter', thesis:'High-speed connectivity chips for AI data centers with hyperscaler demand tailwind. Consistent earnings beats make it ideal for ratio backspreads when IV is suppressed before results.', strat:'Call ratio backspread 1×2 before earnings', stars:4 },
+  { t:'RXRX', n:'Recursion Pharma',         s:'Bio/AI',    sc:'s-bio',   beta:2.9, iv:78, cat:'Trial data', thesis:'AI drug discovery bridging both hot themes. NVIDIA has invested directly. Binary trial readouts make this a textbook long straddle before data releases — or a calendar if you can time the event.', strat:'Long straddle before trial readouts', stars:4 },
+  { t:'BBAI', n:'BigBear.ai Holdings',      s:'Defense AI',sc:'s-def',   beta:3.8, iv:85, cat:'DoD deals', thesis:'Tiny-cap defense AI with the highest beta on the list. Deep OTM LEAPS only — pure lottery ticket. Keep sizing to 3 to 5% maximum. A DoD spending re-rating could be a 10 to 50× event from current levels.', strat:'Deep OTM LEAPS only — 3–5% sizing', stars:3 },
+];
+
+const KNOWN = {
+  NVDA:{name:'NVIDIA Corp',beta:1.9,iv:55,momentum:88,options:95,verdict:'caution',vtext:'King of AI but the momentum is fully priced in. Options chain is the most liquid on the market. Better suited to bull call spreads than deep OTM LEAPS — less convexity but a far higher hit rate at this valuation.',strat:'Bull call spread or diagonal'},
+  TSLA:{name:'Tesla Inc',beta:2.3,iv:70,momentum:72,options:88,verdict:'caution',vtext:'High beta and great options liquidity but the narrative is crowded from both directions. Best as a momentum trade around product events rather than a hold. Conviction and sizing discipline are critical.',strat:'Calendar spread around earnings / product events'},
+  AMD:{name:'Advanced Micro Devices',beta:1.8,iv:52,momentum:65,options:85,verdict:'caution',vtext:'Solid semis name but lower beta than ideal for pure 10x plays. Better suited to diagonal spreads if you have conviction on the AI cycle continuation thesis.',strat:'Diagonal spread'},
+  SMCI:{name:'Super Micro Computer',beta:3.2,iv:82,momentum:60,options:76,verdict:'caution',vtext:'Accounting and governance overhang keeps this stock highly volatile. You can sell premium well given the elevated IV, but directional LEAPS carry material regulatory and delisting risk.',strat:'Calendar spread — avoid directional LEAPS'},
+  COIN:{name:'Coinbase Global',beta:3.4,iv:75,momentum:78,options:82,verdict:'go',vtext:'Excellent crypto cycle proxy with a liquid options chain. High beta and elevated IV. Diagonal spreads work well — sell monthly OTM calls aggressively to reduce LEAPS cost each cycle.',strat:'Diagonal spread or deep OTM LEAPS'},
+  HOOD:{name:'Robinhood Markets',beta:2.8,iv:68,momentum:74,options:70,verdict:'go',vtext:'Crypto plus retail brokerage exposure with good momentum. Options chain is liquid enough for diagonals. Benefits strongly from any risk-on or crypto narrative surge.',strat:'Deep OTM LEAPS or diagonal spread'},
+  RKLB:{name:'Rocket Lab USA',beta:2.8,iv:68,momentum:85,options:84,verdict:'go',vtext:'Core playbook name. High momentum, solid options chain, SpaceX IPO halo. Prime candidate for deep OTM LEAPS or ratio backspreads on re-rating.',strat:"Deep OTM LEAPS (Jan'27 $20–25C)"},
+  ASTS:{name:'AST SpaceMobile',beta:3.1,iv:75,momentum:82,options:80,verdict:'go',vtext:'Core playbook name. Binary satellite deployment events make calendars ideal. Long LEAPS for the secular satellite internet thesis.',strat:'Calendar spreads around launches + LEAPS'},
+  MSTR:{name:'Strategy (MicroStrategy)',beta:4.2,iv:90,momentum:80,options:90,verdict:'go',vtext:'Highest IV on the playbook. BTC proxy with extreme convexity. Diagonals are the smart play — aggressive theta harvesting can reduce your cost basis to near zero over a few months.',strat:"Diagonal spread — sell weeklies vs Jan'27 LEAPS"},
+  IONQ:{name:'IonQ Inc.',beta:3.4,iv:80,momentum:78,options:76,verdict:'go',vtext:'Core playbook name. Quantum narrative plus high IV equals prime LEAPS territory. Always enter on a dip after an IV crush event.',strat:'Deep OTM LEAPS + Calendar around earnings'},
+  PLTR:{name:'Palantir Technologies',beta:2.1,iv:55,momentum:80,options:86,verdict:'go',vtext:'Core playbook name with the best options chain in the group. Diagonal works perfectly given a steady uptrend and moderate IV that rewards patience.',strat:"Diagonal spread — long Jan'27 ATM call"},
+  CRDO:{name:'Credo Technology',beta:2.6,iv:62,momentum:82,options:74,verdict:'go',vtext:'Core playbook name. AI datacenter theme with consistent earnings beats. Ratio backspread is ideal before earnings when IV has not yet expanded.',strat:'Call ratio backspread 1×2'},
+  RXRX:{name:'Recursion Pharma',beta:2.9,iv:78,momentum:72,options:76,verdict:'go',vtext:'Core playbook name. AI drug discovery plus NVIDIA backing. Straddles before trial readouts capture the binary move in both directions.',strat:'Long straddle before trial readouts'},
+  BBAI:{name:'BigBear.ai Holdings',beta:3.8,iv:85,momentum:55,options:60,verdict:'caution',vtext:'Core playbook name but the highest risk in the group. Momentum is uncertain. Keep sizing to 3 to 5% maximum — treat it as a pure lottery ticket and nothing more.',strat:'Deep OTM LEAPS — tiny position only'},
+};
+
+function renderStocks() {
+  document.getElementById('stockList').innerHTML = STOCKS.map((s,i)=>`
+    <div class="stock-card" onclick="toggleStock(${i})">
+      <div class="sc-top">
+        <div class="sc-ticker">${s.t}</div>
+        <div style="text-align:right">
+          <div class="sc-sector ${s.sc}">${s.s}</div>
+          <div class="sc-stars" style="color:var(--bear);font-size:12px;margin-top:5px;letter-spacing:1px">${'★'.repeat(s.stars)}${'☆'.repeat(5-s.stars)}</div>
+        </div>
+      </div>
+      <div class="sc-company">${s.n}</div>
+      <div class="sc-metrics">
+        <div class="sc-metric">
+          <div class="sc-metric-lbl">Beta</div>
+          <div class="sc-metric-val t-bear">${s.beta}</div>
+        </div>
+        <div class="sc-metric">
+          <div class="sc-metric-lbl">IV Rank</div>
+          <div class="sc-metric-val" style="color:var(--gold)">${s.iv}%</div>
+        </div>
+        <div class="sc-metric">
+          <div class="sc-metric-lbl">Catalyst</div>
+          <div class="sc-metric-val" style="font-size:12px;color:var(--bull)">${s.cat}</div>
+        </div>
+      </div>
+      <div class="sc-body" id="sb${i}" style="display:none">
+        <div class="sc-thesis">${s.thesis}</div>
+        <div class="sc-pill">↗ ${s.strat}</div>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-stars" style="color:var(--bear);font-size:12px;letter-spacing:1px">${'★'.repeat(s.stars)}${'☆'.repeat(5-s.stars)}</div>
+        <div class="sc-hint" id="sh${i}">▾ tap for strategy</div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleStock(i) {
+  const b=document.getElementById('sb'+i), h=document.getElementById('sh'+i);
+  const open=b.style.display==='block';
+  b.style.display=open?'none':'block';
+  h.textContent=open?'▾ tap for strategy':'▴ collapse';
+}
+
+function showTab(name,el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  el.classList.add('active');
+}
+
+function quickCheck(t) { document.getElementById('tickerInput').value=t; checkTicker(); }
+
+async function checkTicker() {
+  const raw=document.getElementById('tickerInput').value.trim().toUpperCase();
+  if (!raw) return;
+  const res=document.getElementById('tickerResult');
+  res.innerHTML='<div class="loading"><span class="spinner"></span>Analyzing '+raw+'…</div>';
+  if (KNOWN[raw]) { setTimeout(()=>renderResult(raw,KNOWN[raw]),480); return; }
+  try {
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800,
+        messages:[{role:'user',content:`Analyze "${raw}" for a speculative 10x options strategy (deep OTM LEAPS, diagonals, ratio backspreads, calendars). Respond ONLY with valid JSON, no markdown:
+{"name":"company name","beta":number,"iv":0_to_100,"momentum":0_to_100,"options":0_to_100,"verdict":"go"|"caution"|"pass","vtext":"2-3 sentence analysis","strat":"specific option strategy recommendation"}`}]
+      })
+    });
+    const d=await r.json();
+    const txt=d.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim();
+    renderResult(raw, JSON.parse(txt));
+  } catch(e) {
+    res.innerHTML=`<div class="result-card"><div style="padding:16px;color:var(--bear);font-weight:700">Could not analyze ${raw}. Check the ticker and try again.</div></div>`;
+  }
+}
+
+function renderResult(ticker, d) {
+  const vClass={'go':'v-go','caution':'v-caution','pass':'v-pass'}[d.verdict]||'v-caution';
+  const vIcon={'go':'✅ GO','caution':'⚠️ CAUTION','pass':'❌ PASS'}[d.verdict]||'⚠️ CAUTION';
+  document.getElementById('tickerResult').innerHTML=`
+    <div class="result-card">
+      <div class="result-head">
+        <div class="result-ticker">${ticker}</div>
+        <div class="result-name">${d.name||''} &nbsp;·&nbsp; β ${d.beta||'—'}</div>
+      </div>
+      <div class="result-scores">
+        <div class="score-row">
+          <div class="score-label-row"><span style="color:var(--muted);font-size:11px;font-weight:700">Momentum</span><span style="font-family:var(--display);font-size:15px">${d.momentum}<span style="font-size:11px;color:var(--muted)">/100</span></span></div>
+          <div class="score-bar"><div class="score-fill sf-m" style="width:${d.momentum}%"></div></div>
+        </div>
+        <div class="score-row">
+          <div class="score-label-row"><span style="color:var(--muted);font-size:11px;font-weight:700">IV Rank (est.)</span><span style="font-family:var(--display);font-size:15px">${d.iv}<span style="font-size:11px;color:var(--muted)">%</span></span></div>
+          <div class="score-bar"><div class="score-fill sf-v" style="width:${d.iv}%"></div></div>
+        </div>
+        <div class="score-row" style="margin-bottom:0">
+          <div class="score-label-row"><span style="color:var(--muted);font-size:11px;font-weight:700">Options Liquidity</span><span style="font-family:var(--display);font-size:15px">${d.options}<span style="font-size:11px;color:var(--muted)">/100</span></span></div>
+          <div class="score-bar"><div class="score-fill sf-o" style="width:${d.options}%"></div></div>
+        </div>
+      </div>
+      <div class="verdict ${vClass}"><strong>${vIcon}</strong> — ${d.vtext}</div>
+      <div class="sugg-strat">📐 ${d.strat}</div>
+    </div>`;
+}
+
+function loadPlays() { try{return JSON.parse(localStorage.getItem('optPlays')||'[]');}catch{return[];} }
+function savePlays(p) { localStorage.setItem('optPlays',JSON.stringify(p)); }
+
+function addPlay() {
+  const ticker=document.getElementById('pbTicker').value.trim().toUpperCase();
+  const strategy=document.getElementById('pbStrategy').value;
+  if (!ticker){showToast('Enter a ticker');return;}
+  if (!strategy){showToast('Pick a strategy');return;}
+  const plays=loadPlays();
+  plays.unshift({ id:Date.now(), ticker, strategy,
+    expiry:document.getElementById('pbExpiry').value.trim(),
+    strike:document.getElementById('pbStrike').value.trim(),
+    entry:document.getElementById('pbEntry').value.trim(),
+    catalyst:document.getElementById('pbCatalyst').value.trim(),
+    notes:document.getElementById('pbNotes').value.trim(),
+    date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+  });
+  savePlays(plays); clearForm(); renderPlaybook(); showToast('✓ Play added');
+}
+
+function clearForm() {
+  ['pbTicker','pbExpiry','pbStrike','pbEntry','pbCatalyst','pbNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pbStrategy').value='';
+}
+
+function deletePlay(id) { savePlays(loadPlays().filter(p=>p.id!==id)); renderPlaybook(); showToast('Removed'); }
+
+function renderPlaybook() {
+  const plays=loadPlays();
+  document.getElementById('playCount').textContent=plays.length?`(${plays.length})`:'';
+  document.getElementById('navBadge').textContent=(8+plays.length)+' plays';
+  const list=document.getElementById('playbookList');
+  if (!plays.length) {
+    list.innerHTML='<div class="empty-state"><div class="empty-icon">📓</div>No plays yet.<br>Add one when you hear a new idea.</div>';
+    return;
+  }
+  list.innerHTML=plays.map(p=>{
+    const isBull=['Deep OTM LEAPS','Diagonal Spread','Bull Call Spread'].some(x=>p.strategy.includes(x.split(' ')[0]));
+    return `<div class="pb-entry">
+      <div class="pb-entry-bar ${isBull?'bull':'bear'}"></div>
+      <div class="pb-entry-inner">
+        <div class="pb-entry-top">
+          <div class="pb-eticker">${p.ticker}</div>
+          <div class="pb-edate">${p.date}</div>
+        </div>
+        <div class="pb-etag">${p.strategy}</div>
+        ${p.catalyst?`<div class="pb-ecatalyst">🎯 ${p.catalyst}</div>`:''}
+        ${p.notes?`<div class="pb-enotes">${p.notes}</div>`:''}
+        <div class="pb-echips">
+          ${p.expiry?`<span class="pb-chip chip-neutral">⏰ ${p.expiry}</span>`:''}
+          ${p.strike?`<span class="pb-chip chip-red">↗ ${p.strike}</span>`:''}
+          ${p.entry?`<span class="pb-chip chip-green">$ ${p.entry}</span>`:''}
+        </div>
+      </div>
+      <button class="pb-del" onclick="deletePlay(${p.id})">×</button>
+    </div>`;
+  }).join('');
+}
+
+const TICKERS_ALL=['RKLB','ASTS','MSTR','IONQ','PLTR','CRDO','RXRX','BBAI','COIN','HOOD'];
+const fmtK=v=>v>=1000?'$'+Math.round(v/1000)+'K':'$'+v.toLocaleString();
+const fmtS=v=>(v<0?'−$':'$')+Math.abs(v>=1000?Math.round(v/1000):v)+(Math.abs(v)>=1000?'K':'');
+
+function updateSizing() {
+  const cap=+document.getElementById('capSlider').value;
+  const risk=+document.getElementById('riskSlider').value;
+  const n=+document.getElementById('playsSlider').value;
+  const cash=+document.getElementById('cashSlider').value;
+  document.getElementById('capVal').textContent='$'+cap.toLocaleString();
+  document.getElementById('riskVal').textContent=risk+'%';
+  document.getElementById('playsVal').textContent=n;
+  document.getElementById('cashVal').textContent=cash+'%';
+  const deploy=cap*(1-cash/100);
+  const per=Math.round(deploy*(risk/100));
+  document.getElementById('perPlay').textContent='$'+per.toLocaleString();
+  document.getElementById('maxLoss').textContent=fmtK(Math.round(per*n*0.82));
+  document.getElementById('target').textContent=fmtK(Math.round(per*n*10));
+  document.getElementById('allocGrid').innerHTML=TICKERS_ALL.slice(0,n).map(t=>`
+    <div class="alloc-box"><div class="alloc-t">${t}</div><div class="alloc-$">$${per.toLocaleString()}</div><div class="alloc-p">${risk}%</div></div>`).join('');
+  const base=per*n;
+  const vals={
+    bear: Math.round(per*1*2 - per*(n-1)*0.82),
+    base: Math.round(per*3*5 - per*(n-3)*0.72),
+    bull: Math.round(per*4*12 - per*(n-4)*0.82),
+    dream:Math.round(per*2*30 - per*(n-2)*0.9)
+  };
+  Object.entries(vals).forEach(([k,v])=>{
+    document.getElementById(k+'Roi').textContent=(v>=0?'+':'')+Math.round(v/base*100)+'%';
+    document.getElementById(k+'Pnl').textContent=(v>=0?'+$':'-$')+Math.abs(v).toLocaleString();
+  });
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+renderStocks(); renderPlaybook(); updateSizing();
+</script>
+</body>
+</html>

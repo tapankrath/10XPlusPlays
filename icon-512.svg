@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#111111"/>
+  <rect x="48" y="48" width="416" height="5" fill="rgba(255,255,255,0.12)"/>
+  <!-- 7 bars -->
+  <rect x="48"  y="300" width="50" height="164" fill="#22a04d"/>
+  <rect x="112" y="238" width="50" height="226" fill="#22a04d"/>
+  <rect x="176" y="270" width="50" height="194" fill="#e02020"/>
+  <rect x="240" y="170" width="50" height="294" fill="#22a04d"/>
+  <rect x="304" y="210" width="50" height="254" fill="#e02020"/>
+  <rect x="368" y="120" width="50" height="344" fill="#22a04d"/>
+  <!-- Name at bottom -->
+  <text x="48" y="500" font-family="Arial Black,sans-serif" font-weight="900" font-size="36" fill="rgba(255,255,255,0.55)" letter-spacing="2">10XPLUS</text>
+  <!-- Accent border -->
+  <rect x="8" y="8" width="496" height="496" fill="none" stroke="#22a04d" stroke-width="3" opacity="0.35"/>
+</svg>
